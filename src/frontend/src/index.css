@@ -200,6 +200,168 @@
   z-index: 10000;
 }
 
+/* ── Space / Astronomy animations ── */
+
+@keyframes starTwinkle {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.15;
+    transform: scale(0.6);
+  }
+}
+
+.animate-star-twinkle {
+  animation: starTwinkle ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 60px #ffe080cc, 0 0 120px #ffb84077, 0 0 200px #ff80c055, 0
+      0 280px #ff60a033;
+  }
+  50% {
+    box-shadow: 0 0 90px #ffe8a0dd, 0 0 160px #ffcc6099, 0 0 260px #ff90d077, 0
+      0 340px #ff70b055;
+  }
+}
+
+/* Shooting star */
+@keyframes shootingStar {
+  0% {
+    transform: translateX(-100px) translateY(0) scaleX(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scaleX(1);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translateX(calc(100vw + 200px)) translateY(60px) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(calc(100vw + 300px)) translateY(80px) scaleX(0.5);
+  }
+}
+
+.shooting-star {
+  position: absolute;
+  left: 0;
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(220, 160, 255, 0.9) 60%,
+    rgba(255, 200, 255, 1) 100%
+  );
+  border-radius: 2px;
+  pointer-events: none;
+  animation: shootingStar 6s linear infinite;
+  opacity: 0;
+  z-index: 1;
+}
+
+/* Planet orbits - CSS custom animations per planet */
+@keyframes orbit-mercury {
+  from {
+    transform: rotate(20deg) translateX(90px) rotate(-20deg);
+  }
+  to {
+    transform: rotate(380deg) translateX(90px) rotate(-380deg);
+  }
+}
+@keyframes orbit-venus {
+  from {
+    transform: rotate(65deg) translateX(130px) rotate(-65deg);
+  }
+  to {
+    transform: rotate(425deg) translateX(130px) rotate(-425deg);
+  }
+}
+@keyframes orbit-earth {
+  from {
+    transform: rotate(120deg) translateX(175px) rotate(-120deg);
+  }
+  to {
+    transform: rotate(480deg) translateX(175px) rotate(-480deg);
+  }
+}
+@keyframes orbit-mars {
+  from {
+    transform: rotate(200deg) translateX(218px) rotate(-200deg);
+  }
+  to {
+    transform: rotate(560deg) translateX(218px) rotate(-560deg);
+  }
+}
+@keyframes orbit-jupiter {
+  from {
+    transform: rotate(280deg) translateX(280px) rotate(-280deg);
+  }
+  to {
+    transform: rotate(640deg) translateX(280px) rotate(-640deg);
+  }
+}
+@keyframes orbit-saturn {
+  from {
+    transform: rotate(340deg) translateX(340px) rotate(-340deg);
+  }
+  to {
+    transform: rotate(700deg) translateX(340px) rotate(-700deg);
+  }
+}
+@keyframes orbit-uranus {
+  from {
+    transform: rotate(40deg) translateX(395px) rotate(-40deg);
+  }
+  to {
+    transform: rotate(400deg) translateX(395px) rotate(-400deg);
+  }
+}
+@keyframes orbit-neptune {
+  from {
+    transform: rotate(150deg) translateX(445px) rotate(-150deg);
+  }
+  to {
+    transform: rotate(510deg) translateX(445px) rotate(-510deg);
+  }
+}
+
+/* planet orbit classes used by Planet component */
+.orbit-planet-mercury {
+  animation: orbit-mercury 8s linear infinite;
+}
+.orbit-planet-venus {
+  animation: orbit-venus 12s linear infinite;
+}
+.orbit-planet-earth {
+  animation: orbit-earth 18s linear infinite;
+}
+.orbit-planet-mars {
+  animation: orbit-mars 24s linear infinite;
+}
+.orbit-planet-jupiter {
+  animation: orbit-jupiter 42s linear infinite;
+}
+.orbit-planet-saturn {
+  animation: orbit-saturn 58s linear infinite;
+}
+.orbit-planet-uranus {
+  animation: orbit-uranus 72s linear infinite;
+}
+.orbit-planet-neptune {
+  animation: orbit-neptune 88s linear infinite;
+}
+
+/* ── End space animations ── */
+
 /* Countdown gate floating sparkle stars */
 @keyframes floatStar {
   0%,
