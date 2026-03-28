@@ -1,7 +1,472 @@
 import { AnimatePresence, motion, useAnimation } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-// ─── Countdown Gate ──────────────────────────────────────────────────────────
+// ─── Countdown Gate ───────────────────────────────────────────────────────────
+
+const PLANETS = [
+  { color: "oklch(0.85 0.14 0)", size: 14, orbit: 70, duration: 7 },
+  { color: "oklch(0.75 0.14 220)", size: 10, orbit: 100, duration: 11 },
+  { color: "oklch(0.80 0.12 290)", size: 12, orbit: 130, duration: 15 },
+  { color: "oklch(0.80 0.14 140)", size: 9, orbit: 160, duration: 20 },
+  { color: "oklch(0.88 0.15 75)", size: 11, orbit: 190, duration: 26 },
+];
+
+function StarCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const stars = Array.from({ length: 80 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.8 + 0.3,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.02 + 0.01,
+    }));
+
+    let raf: number;
+    let t = 0;
+    function draw() {
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      t += 1;
+      for (const s of stars) {
+        const alpha = 0.4 + 0.6 * Math.abs(Math.sin(t * s.speed + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        const gold = Math.random() > 0.7;
+        ctx.fillStyle = gold
+          ? `rgba(255,220,150,${alpha})`
+          : `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+      }
+      raf = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
+
+const BIRTHDAY_TARGET = new Date("2026-03-29T00:00:00").getTime();
+
+function calcCountdown() {
+  const diff = BIRTHDAY_TARGET - Date.now();
+  if (diff <= 0)
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
+  const s = Math.floor(diff / 1000);
+  return {
+    days: Math.floor(s / 86400),
+    hours: Math.floor((s % 86400) / 3600),
+    minutes: Math.floor((s % 3600) / 60),
+    seconds: s % 60,
+    done: false,
+  };
+}
+
+function CountdownPage({ onUnlock }: { onUnlock: () => void }) {
+  const [time, setTime] = useState(calcCountdown);
+
+  useEffect(() => {
+    if (time.done) {
+      onUnlock();
+      return;
+    }
+    const id = setInterval(() => {
+      const next = calcCountdown();
+      setTime(next);
+      if (next.done) {
+        clearInterval(id);
+        onUnlock();
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [onUnlock, time.done]);
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <div
+      style={{
+        minHeight: "100dvh",
+        width: "100%",
+        background: "oklch(0.16 0.10 320)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
+        padding: "1rem",
+      }}
+    >
+      <style>{`
+        @keyframes orbit {
+          from { transform: rotate(0deg) translateX(var(--orbit-r)) rotate(0deg); }
+          to   { transform: rotate(360deg) translateX(var(--orbit-r)) rotate(-360deg); }
+        }
+        @keyframes sun-pulse {
+          0%,100% { transform: scale(1); }
+          50%      { transform: scale(1.08); }
+        }
+        @keyframes cd-float {
+          0%,100% { transform: translateY(0); }
+          50%      { transform: translateY(-8px); }
+        }
+        @keyframes cd-deco-float {
+          0%,100% { transform: translateY(0) rotate(0deg); opacity: 0.85; }
+          50%      { transform: translateY(-12px) rotate(6deg); opacity: 1; }
+        }
+      `}</style>
+
+      {/* Stars canvas */}
+      <StarCanvas />
+
+      {/* Radial glow overlay */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse 70% 60% at 50% 50%, oklch(0.45 0.20 330 / 0.18) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 2,
+        }}
+      />
+
+      {/* Floating kawaii decorations */}
+      {[
+        {
+          emoji: "🎈",
+          top: "8%",
+          left: "6%",
+          size: "2rem",
+          delay: 0,
+          dur: 3.5,
+        },
+        {
+          emoji: "💖",
+          top: "6%",
+          left: "82%",
+          size: "1.8rem",
+          delay: 0.6,
+          dur: 3.2,
+        },
+        {
+          emoji: "⭐",
+          top: "30%",
+          left: "4%",
+          size: "1.6rem",
+          delay: 1.2,
+          dur: 4,
+        },
+        {
+          emoji: "🌸",
+          top: "35%",
+          left: "90%",
+          size: "1.7rem",
+          delay: 0.4,
+          dur: 3.8,
+        },
+        {
+          emoji: "🎊",
+          top: "70%",
+          left: "5%",
+          size: "2rem",
+          delay: 0.8,
+          dur: 4.2,
+        },
+        {
+          emoji: "💕",
+          top: "75%",
+          left: "88%",
+          size: "1.8rem",
+          delay: 1.5,
+          dur: 3.6,
+        },
+        {
+          emoji: "✨",
+          top: "14%",
+          left: "50%",
+          size: "1.4rem",
+          delay: 0.3,
+          dur: 2.8,
+        },
+        {
+          emoji: "🎀",
+          top: "55%",
+          left: "2%",
+          size: "1.9rem",
+          delay: 1.9,
+          dur: 3.9,
+        },
+        {
+          emoji: "🌙",
+          top: "18%",
+          left: "18%",
+          size: "1.5rem",
+          delay: 0.7,
+          dur: 4.4,
+        },
+        {
+          emoji: "🎂",
+          top: "20%",
+          left: "76%",
+          size: "1.6rem",
+          delay: 1.4,
+          dur: 3.3,
+        },
+        {
+          emoji: "💫",
+          top: "82%",
+          left: "45%",
+          size: "1.5rem",
+          delay: 2.1,
+          dur: 3.7,
+        },
+        {
+          emoji: "🌺",
+          top: "60%",
+          left: "93%",
+          size: "1.7rem",
+          delay: 0.2,
+          dur: 4.1,
+        },
+      ].map((d) => (
+        <div
+          key={d.emoji + d.top}
+          style={{
+            position: "absolute",
+            top: d.top,
+            left: d.left,
+            fontSize: d.size,
+            animation: `cd-deco-float ${d.dur}s ease-in-out infinite`,
+            animationDelay: `${d.delay}s`,
+            pointerEvents: "none",
+            zIndex: 3,
+            userSelect: "none",
+          }}
+        >
+          {d.emoji}
+        </div>
+      ))}
+
+      {/* Solar system */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 0,
+          height: 0,
+          pointerEvents: "none",
+          zIndex: 1,
+        }}
+      >
+        {/* Sun */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 44,
+            height: 44,
+            borderRadius: "50%",
+            background: "oklch(0.85 0.18 30)",
+            boxShadow:
+              "0 0 30px oklch(0.85 0.18 30), 0 0 60px oklch(0.75 0.20 30 / 0.5), 0 0 100px oklch(0.65 0.18 30 / 0.25)",
+            animation: "sun-pulse 3s ease-in-out infinite",
+          }}
+        />
+        {/* Planets */}
+        {PLANETS.map((p, i) => (
+          <div
+            key={p.color}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              // orbit ring (visual only)
+              width: p.orbit * 2,
+              height: p.orbit * 2,
+              marginTop: -p.orbit,
+              marginLeft: -p.orbit,
+              borderRadius: "50%",
+              border: "1px solid oklch(0.80 0.06 310 / 0.12)",
+            }}
+          >
+            <div
+              style={
+                {
+                  position: "absolute",
+                  top: 0,
+                  left: "50%",
+                  marginLeft: -p.size / 2,
+                  marginTop: -p.size / 2,
+                  width: p.size,
+                  height: p.size,
+                  borderRadius: "50%",
+                  background: p.color,
+                  boxShadow: `0 0 10px ${p.color}`,
+                  ["--orbit-r" as string]: `${p.orbit}px`,
+                  animation: `orbit ${p.duration}s linear infinite`,
+                  animationDelay: `${-i * 2}s`,
+                  willChange: "transform",
+                } as React.CSSProperties
+              }
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Countdown card */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 10,
+          background: "oklch(1 0 0 / 0.05)",
+          backdropFilter: "blur(4px)",
+          borderRadius: "2rem",
+          padding: "2rem 1.5rem",
+          maxWidth: 380,
+          width: "100%",
+          textAlign: "center",
+          border: "1px solid oklch(1 0 0 / 0.25)",
+          boxShadow: "0 4px 24px oklch(0 0 0 / 0.15)",
+          animation: "cd-float 4s ease-in-out infinite",
+        }}
+      >
+        {/* Name */}
+        <div
+          style={{
+            fontFamily: "'Dancing Script', cursive",
+            fontSize: "3.2rem",
+            fontWeight: 700,
+            lineHeight: 1.1,
+            color: "white",
+            textShadow:
+              "0 0 20px oklch(0.75 0.22 0), 0 0 40px oklch(0.65 0.20 310), 0 0 60px oklch(0.55 0.18 310)",
+            marginBottom: "0.3rem",
+          }}
+        >
+          Maitri
+        </div>
+        <div
+          style={{
+            fontFamily: "'Nunito', sans-serif",
+            fontSize: "0.95rem",
+            color: "oklch(0.85 0.12 310)",
+            letterSpacing: "0.12em",
+            marginBottom: "1.8rem",
+          }}
+        >
+          ✦ you are my universe ✦
+        </div>
+
+        {/* Boxes */}
+        <div
+          style={{
+            display: "flex",
+            gap: "0.6rem",
+            justifyContent: "center",
+            marginBottom: "1.6rem",
+          }}
+        >
+          {[
+            { label: "Days", val: time.days },
+            { label: "Hours", val: time.hours },
+            { label: "Minutes", val: time.minutes },
+            { label: "Seconds", val: time.seconds },
+          ].map((item) => (
+            <div
+              key={item.label}
+              style={{
+                background: "oklch(1 0 0 / 0.10)",
+                border: "1px solid oklch(1 0 0 / 0.25)",
+                borderRadius: "0.9rem",
+                padding: "0.7rem 0.5rem",
+                minWidth: "64px",
+                flex: 1,
+                boxShadow: "0 2px 8px oklch(0 0 0 / 0.20)",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "'Dancing Script', cursive",
+                  fontWeight: 700,
+                  fontSize: "2.6rem",
+                  color: "white",
+                  lineHeight: 1,
+                }}
+              >
+                {pad(item.val)}
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Nunito', sans-serif",
+                  fontSize: "0.65rem",
+                  fontWeight: 600,
+                  color: "oklch(0.95 0.05 310)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  marginTop: "0.25rem",
+                }}
+              >
+                {item.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Teaser message */}
+        <p
+          style={{
+            fontFamily: "'Nunito', sans-serif",
+            fontSize: "0.95rem",
+            color: "oklch(0.82 0.10 310)",
+            lineHeight: 1.6,
+          }}
+        >
+          Something magical is waiting for you...
+          <br />
+          just a little longer 💕
+        </p>
+
+        {/* Stars emojis decoration */}
+        <div style={{ marginTop: "1.2rem", fontSize: "1.3rem", opacity: 0.6 }}>
+          ✨ 🌙 ⭐ 🌟 ✨
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── Existing site ────────────────────────────────────────────────────────────
 
@@ -1237,6 +1702,9 @@ function Footer() {
 }
 
 export default function App() {
+  const [unlocked, setUnlocked] = useState(
+    () => new Date() >= new Date("2026-03-29T00:00:00"),
+  );
   const [surpriseOpen, setSurpriseOpen] = useState(false);
   const [confettiActive, setConfettiActive] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
@@ -1273,6 +1741,10 @@ export default function App() {
     }
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  if (!unlocked) {
+    return <CountdownPage onUnlock={() => setUnlocked(true)} />;
   }
 
   return (
