@@ -221,12 +221,10 @@
 @keyframes sunPulse {
   0%,
   100% {
-    box-shadow: 0 0 60px #ffe080cc, 0 0 120px #ffb84077, 0 0 200px #ff80c055, 0
-      0 280px #ff60a033;
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 90px #ffe8a0dd, 0 0 160px #ffcc6099, 0 0 260px #ff90d077, 0
-      0 340px #ff70b055;
+    transform: scale(1.07);
   }
 }
 
@@ -255,6 +253,7 @@
   left: 0;
   width: 120px;
   height: 2px;
+  will-change: transform, opacity;
   background: linear-gradient(
     90deg,
     transparent 0%,
@@ -336,27 +335,35 @@
 
 /* planet orbit classes used by Planet component */
 .orbit-planet-mercury {
+  will-change: transform;
   animation: orbit-mercury 8s linear infinite;
 }
 .orbit-planet-venus {
+  will-change: transform;
   animation: orbit-venus 12s linear infinite;
 }
 .orbit-planet-earth {
+  will-change: transform;
   animation: orbit-earth 18s linear infinite;
 }
 .orbit-planet-mars {
+  will-change: transform;
   animation: orbit-mars 24s linear infinite;
 }
 .orbit-planet-jupiter {
+  will-change: transform;
   animation: orbit-jupiter 42s linear infinite;
 }
 .orbit-planet-saturn {
+  will-change: transform;
   animation: orbit-saturn 58s linear infinite;
 }
 .orbit-planet-uranus {
+  will-change: transform;
   animation: orbit-uranus 72s linear infinite;
 }
 .orbit-planet-neptune {
+  will-change: transform;
   animation: orbit-neptune 88s linear infinite;
 }
 

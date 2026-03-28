@@ -3,696 +3,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 // ─── Countdown Gate ──────────────────────────────────────────────────────────
 
-const BIRTHDAY_DATE = new Date("2026-03-29T00:00:00");
-
-const BURST_PARTICLES = [
-  { id: "bp1", emoji: "🌟", tx: -120, ty: -180 },
-  { id: "bp2", emoji: "🪐", tx: 130, ty: -160 },
-  { emoji: "✨", tx: -80, ty: -200 },
-  { emoji: "⭐", tx: 90, ty: -190 },
-  { emoji: "🌙", tx: -150, ty: -100 },
-  { emoji: "💫", tx: 140, ty: -110 },
-  { emoji: "🌠", tx: 50, ty: -200 },
-  { emoji: "🌸", tx: -50, ty: -180 },
-  { emoji: "🪐", tx: -130, ty: -70 },
-  { emoji: "✨", tx: 120, ty: -70 },
-  { emoji: "🌟", tx: -20, ty: -220 },
-  { emoji: "💫", tx: 20, ty: -215 },
-];
-
-const PLANETS = [
-  {
-    id: "mercury",
-    name: "Mercury",
-    size: 8,
-    color: "#d4b8e0",
-    glow: "#e8d4f0",
-    rings: false,
-    orbitRadius: 90,
-    speed: 8,
-    initialAngle: 20,
-  },
-  {
-    id: "venus",
-    name: "Venus",
-    size: 14,
-    color: "#f4c2a1",
-    glow: "#f8d4b8",
-    rings: false,
-    orbitRadius: 130,
-    speed: 12,
-    initialAngle: 65,
-  },
-  {
-    id: "earth",
-    name: "Earth",
-    size: 16,
-    color: "#7ecac3",
-    glow: "#9ee0da",
-    rings: false,
-    orbitRadius: 175,
-    speed: 18,
-    initialAngle: 120,
-  },
-  {
-    id: "mars",
-    name: "Mars",
-    size: 12,
-    color: "#f08080",
-    glow: "#f8a0a0",
-    rings: false,
-    orbitRadius: 218,
-    speed: 24,
-    initialAngle: 200,
-  },
-  {
-    id: "jupiter",
-    name: "Jupiter",
-    size: 40,
-    color: "#f4a460",
-    glow: "#f8bc80",
-    rings: false,
-    orbitRadius: 280,
-    speed: 42,
-    initialAngle: 280,
-  },
-  {
-    id: "saturn",
-    name: "Saturn",
-    size: 32,
-    color: "#f0e68c",
-    glow: "#f8f0a0",
-    rings: true,
-    orbitRadius: 340,
-    speed: 58,
-    initialAngle: 340,
-  },
-  {
-    id: "uranus",
-    name: "Uranus",
-    size: 22,
-    color: "#b0e0e6",
-    glow: "#c8eef2",
-    rings: false,
-    orbitRadius: 395,
-    speed: 72,
-    initialAngle: 40,
-  },
-  {
-    id: "neptune",
-    name: "Neptune",
-    size: 20,
-    color: "#b8a9d9",
-    glow: "#ccc0e8",
-    rings: false,
-    orbitRadius: 445,
-    speed: 88,
-    initialAngle: 150,
-  },
-];
-
-// Generate 160 stars with fixed positions
-const STARS = Array.from({ length: 160 }, (_, i) => {
-  const seed = i * 137.508;
-  const x = ((seed * 11.3) % 100).toFixed(2);
-  const y = ((seed * 7.9) % 100).toFixed(2);
-  const size = ((seed % 2.5) + 0.5).toFixed(1);
-  const dur = ((seed % 3) + 2).toFixed(1);
-  const delay = (seed % 4).toFixed(1);
-  return { id: `star-${i}`, x, y, size, dur, delay };
-});
-
-// 5 shooting stars
-const SHOOTING_STARS = [
-  { id: "ss1", top: 10, delay: 3 },
-  { id: "ss2", top: 25, delay: 8 },
-  { id: "ss3", top: 50, delay: 14 },
-  { id: "ss4", top: 70, delay: 20 },
-  { id: "ss5", top: 85, delay: 26 },
-];
-
-function useCountdown(target: Date) {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const diffMs = target.getTime() - now.getTime();
-  const past = diffMs <= 0;
-  const days = past ? 0 : Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const hours = past
-    ? 0
-    : Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = past
-    ? 0
-    : Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = past ? 0 : Math.floor((diffMs % (1000 * 60)) / 1000);
-
-  return { days, hours, minutes, seconds, past, now };
-}
-
-function CountdownBox({
-  value,
-  label,
-}: {
-  value: number;
-  label: string;
-}) {
-  return (
-    <div
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(50,10,80,0.85) 0%, rgba(30,10,60,0.85) 100%)",
-        border: "1px solid rgba(255,182,193,0.4)",
-        borderRadius: "1rem",
-        padding: "1rem 1.5rem",
-        backdropFilter: "blur(12px)",
-        boxShadow:
-          "0 0 24px rgba(200,100,220,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
-        minWidth: "5rem",
-        textAlign: "center",
-      }}
-    >
-      <div
-        className="font-dancing"
-        style={{
-          fontSize: "clamp(3rem, 10vw, 5rem)",
-          color: "#ffb6e1",
-          lineHeight: 1,
-          textShadow: "0 0 20px rgba(255,100,200,0.7)",
-        }}
-      >
-        {String(value).padStart(2, "0")}
-      </div>
-      <div
-        className="font-nunito"
-        style={{
-          fontSize: "0.85rem",
-          textTransform: "uppercase",
-          letterSpacing: "0.12em",
-          color: "rgba(255,200,240,0.85)",
-          marginTop: "0.35rem",
-        }}
-      >
-        {label}
-      </div>
-    </div>
-  );
-}
-
-interface PlanetProps {
-  planet: (typeof PLANETS)[0];
-  aligned: boolean;
-  alignIndex: number;
-  totalPlanets: number;
-}
-
-function Planet({ planet, aligned, alignIndex, totalPlanets }: PlanetProps) {
-  const controls = useAnimation();
-  // Spacing for alignment: spread planets evenly across the screen
-  const alignedX = useMemo(() => {
-    const spacing = Math.min(
-      (typeof window !== "undefined" ? window.innerWidth : 800) /
-        (totalPlanets + 1),
-      100,
-    );
-    return -((totalPlanets - 1) / 2) * spacing + alignIndex * spacing;
-  }, [alignIndex, totalPlanets]);
-
-  useEffect(() => {
-    if (aligned) {
-      controls.start({
-        x: alignedX,
-        y: 0,
-        transition: {
-          type: "spring",
-          stiffness: 60,
-          damping: 14,
-          delay: alignIndex * 0.12,
-        },
-      });
-    } else {
-      controls.start({ x: 0, y: 0, transition: { duration: 0 } });
-    }
-  }, [aligned, alignedX, controls, alignIndex]);
-
-  const orbitStyle: React.CSSProperties = aligned
-    ? {}
-    : {
-        animation: `orbit-${planet.id} ${planet.speed}s linear infinite`,
-      };
-
-  return (
-    <motion.div
-      animate={controls}
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        marginLeft: `-${planet.size / 2}px`,
-        marginTop: `-${planet.size / 2}px`,
-        width: planet.size,
-        height: planet.size,
-        ...orbitStyle,
-        transformOrigin: `${planet.size / 2 - planet.orbitRadius}px ${planet.size / 2}px`,
-        zIndex: 2,
-      }}
-      className={aligned ? "" : `orbit-planet-${planet.id}`}
-    >
-      {/* Planet body */}
-      <div
-        style={{
-          width: planet.size,
-          height: planet.size,
-          borderRadius: "50%",
-          background:
-            planet.id === "earth"
-              ? "radial-gradient(circle at 35% 35%, #a0e8d0 0%, #7ecac3 50%, #4a9a90 100%)"
-              : planet.id === "jupiter"
-                ? "linear-gradient(180deg, #f8bc80 0%, #f4a460 30%, #e08040 50%, #f4a460 70%, #f8bc80 100%)"
-                : planet.id === "saturn"
-                  ? "radial-gradient(circle at 40% 35%, #fdf8d0 0%, #f0e68c 60%, #d8c860 100%)"
-                  : `radial-gradient(circle at 35% 35%, ${planet.glow} 0%, ${planet.color} 60%, ${planet.color}88 100%)`,
-          boxShadow: `0 0 ${planet.size * 0.8}px ${planet.glow}88, 0 0 ${planet.size * 0.4}px ${planet.glow}66`,
-          position: "relative",
-        }}
-      >
-        {/* Saturn rings */}
-        {planet.rings && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%) rotateX(70deg)",
-              width: planet.size * 2.6,
-              height: planet.size * 2.6,
-              borderRadius: "50%",
-              border: `${planet.size * 0.18}px solid rgba(255,182,193,0.6)`,
-              boxShadow: "0 0 8px rgba(255,182,193,0.4)",
-              pointerEvents: "none",
-            }}
-          />
-        )}
-      </div>
-      {/* Planet label on alignment */}
-      {aligned && (
-        <div
-          style={{
-            position: "absolute",
-            top: planet.size + 6,
-            left: "50%",
-            transform: "translateX(-50%)",
-            fontSize: "9px",
-            color: "rgba(255,200,240,0.8)",
-            whiteSpace: "nowrap",
-            fontFamily: "Nunito, sans-serif",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {planet.name}
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
-function SpaceBackground() {
-  return (
-    <>
-      {/* Stars */}
-      {STARS.map((star) => (
-        <span
-          key={star.id}
-          className="absolute rounded-full pointer-events-none animate-star-twinkle"
-          style={{
-            left: `${star.x}%`,
-            top: `${star.y}%`,
-            width: `${star.size}px`,
-            height: `${star.size}px`,
-            background:
-              Number(star.size) > 1.8
-                ? Number(star.size) > 2.2
-                  ? "#ffd4f0"
-                  : "#e8d4ff"
-                : "#ffffff",
-            opacity: 0.7,
-            animationDuration: `${star.dur}s`,
-            animationDelay: `${star.delay}s`,
-          }}
-        />
-      ))}
-
-      {/* Shooting stars */}
-      {SHOOTING_STARS.map((ss) => (
-        <span
-          key={ss.id}
-          className="shooting-star"
-          style={{
-            top: `${ss.top}%`,
-            animationDelay: `${ss.delay}s`,
-          }}
-        />
-      ))}
-
-      {/* Sun (centered, planets orbit around it) */}
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "140px",
-          height: "140px",
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle at 40% 40%, #fff8cc 0%, #ffe066 40%, #ffaa44 80%)",
-          boxShadow:
-            "0 0 60px #ffe080cc, 0 0 120px #ffb84077, 0 0 200px #ff80c055, 0 0 280px #ff60a033",
-          zIndex: 1,
-          animation: "sunPulse 4s ease-in-out infinite",
-        }}
-      />
-
-      {/* Deep space nebula glow */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(ellipse at 20% 50%, rgba(180,60,160,0.18) 0%, transparent 60%), " +
-            "radial-gradient(ellipse at 80% 20%, rgba(140,40,180,0.15) 0%, transparent 50%), " +
-            "radial-gradient(ellipse at 60% 80%, rgba(200,80,140,0.12) 0%, transparent 55%)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-    </>
-  );
-}
-
-function CountdownGate() {
-  const { days, hours, minutes, seconds, past } = useCountdown(BIRTHDAY_DATE);
-  const [showParticles, setShowParticles] = useState(true);
-  const aligned =
-    past || (days === 0 && hours === 0 && minutes === 0 && seconds === 0);
-  const [showAlignMsg, setShowAlignMsg] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setShowParticles(false), 1500);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    if (aligned) {
-      const t = setTimeout(() => setShowAlignMsg(true), 800);
-      return () => clearTimeout(t);
-    }
-    setShowAlignMsg(false);
-  }, [aligned]);
-
-  return (
-    <div
-      className="fixed inset-0 overflow-hidden flex flex-col items-center justify-center"
-      style={{
-        zIndex: 9999,
-        background:
-          "linear-gradient(160deg, #0e0520 0%, #1a0a2e 40%, #2a0a3e 70%, #1a0520 100%)",
-      }}
-      data-ocid="countdown.panel"
-    >
-      <SpaceBackground />
-
-      {/* Orbiting planets (positioned relative to viewport center) */}
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: 0,
-          height: 0,
-          zIndex: 1,
-          pointerEvents: "none",
-        }}
-      >
-        {PLANETS.map((planet, i) => (
-          <Planet
-            key={planet.id}
-            planet={planet}
-            aligned={aligned}
-            alignIndex={i}
-            totalPlanets={PLANETS.length}
-          />
-        ))}
-      </div>
-
-      {/* Alignment glow overlay */}
-      <AnimatePresence>
-        {aligned && (
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(255,100,200,0.15) 0%, transparent 70%)",
-              zIndex: 2,
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Particle burst on mount */}
-      {showParticles &&
-        BURST_PARTICLES.map((p, i) => (
-          <span
-            key={p.id ?? `bp-${i}`}
-            className="pop-particle"
-            style={{
-              // @ts-expect-error css custom props
-              "--tx": `${p.tx}px`,
-              "--ty": `${p.ty}px`,
-              animationDelay: `${i * 0.06}s`,
-            }}
-          >
-            {p.emoji}
-          </span>
-        ))}
-
-      {/* Main card */}
-      <motion.div
-        className="relative z-10 flex flex-col items-center px-6 py-8 max-w-xl w-full"
-        style={{ overflowY: "auto", maxHeight: "100vh" }}
-        initial={{ scale: 0.3, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 200, damping: 18 }}
-      >
-        {/* Maitri glowing name */}
-        <motion.div
-          className="text-center mb-2"
-          animate={{ opacity: [0.85, 1, 0.85], scale: [0.98, 1.02, 0.98] }}
-          transition={{
-            duration: 3,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        >
-          <div
-            className="font-dancing"
-            style={{
-              fontSize: "clamp(3.5rem, 18vw, 7rem)",
-              color: "#fff5fc",
-              letterSpacing: "0.08em",
-              textShadow:
-                "0 0 20px #fff, 0 0 40px #ff9de2, 0 0 80px #c678dd, 0 0 120px rgba(198,120,221,0.5)",
-              lineHeight: 1.1,
-            }}
-          >
-            Maitri
-          </div>
-          <motion.div
-            className="font-nunito"
-            style={{
-              fontSize: "clamp(0.85rem, 3.5vw, 1.2rem)",
-              color: "rgba(255, 220, 245, 0.85)",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              textShadow: "0 0 12px #ff9de2, 0 0 30px rgba(198,120,221,0.4)",
-              marginTop: "0.3rem",
-            }}
-            animate={{ opacity: [0.6, 0.9, 0.6] }}
-            transition={{
-              duration: 3.5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: 0.5,
-            }}
-          >
-            ✦ you are my universe ✦
-          </motion.div>
-        </motion.div>
-
-        {/* Telescope emoji */}
-        <motion.div
-          className="text-5xl mb-2"
-          animate={{ scale: [1, 1.1, 1], rotate: [0, 6, -6, 0] }}
-          transition={{ repeat: Number.POSITIVE_INFINITY, duration: 3.5 }}
-        >
-          🌸
-        </motion.div>
-
-        {/* Title */}
-        <motion.h1
-          className="font-dancing text-center mb-1"
-          style={{
-            fontSize: "clamp(2rem, 7vw, 3.5rem)",
-            color: "#ffb6e1",
-            textShadow:
-              "0 0 30px rgba(255,100,200,0.6), 0 0 60px rgba(200,80,220,0.3)",
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-        >
-          Maitri's 19th Birthday
-        </motion.h1>
-
-        <motion.p
-          className="font-nunito text-center mb-6"
-          style={{
-            fontSize: "clamp(0.95rem, 3vw, 1.15rem)",
-            color: "rgba(255,200,240,0.85)",
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          The universe is counting down... ✨
-        </motion.p>
-
-        {/* Countdown grid */}
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-7 w-full justify-items-center"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.7 }}
-        >
-          <CountdownBox value={days} label="Days" />
-          <CountdownBox value={hours} label="Hours" />
-          <CountdownBox value={minutes} label="Minutes" />
-          <CountdownBox value={seconds} label="Seconds" />
-        </motion.div>
-
-        {/* Birth details */}
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.0 }}
-        >
-          <div
-            className="inline-flex flex-col items-center gap-1 rounded-2xl px-6 py-4"
-            style={{
-              background: "rgba(30,10,50,0.75)",
-              border: "1px solid rgba(255,182,193,0.3)",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 0 30px rgba(200,80,200,0.15)",
-            }}
-          >
-            <span className="text-2xl">🌙</span>
-            <p
-              className="font-dancing"
-              style={{
-                fontSize: "clamp(1.3rem, 4vw, 1.8rem)",
-                color: "#ffcce8",
-                textShadow: "0 0 15px rgba(255,100,180,0.5)",
-              }}
-            >
-              Born at 11:55 PM · March 29, 2007
-            </p>
-            <p
-              className="font-nunito"
-              style={{
-                fontSize: "clamp(0.8rem, 2.5vw, 0.95rem)",
-                color: "rgba(255,180,230,0.8)",
-              }}
-            >
-              19 years of pure magic ✨ · Aries Sun 🐏 · Spring Baby 🌸
-            </p>
-            <p
-              className="font-nunito mt-1"
-              style={{
-                fontSize: "clamp(0.75rem, 2vw, 0.88rem)",
-                color: "rgba(220,160,220,0.65)",
-              }}
-            >
-              She arrived just 5 minutes before midnight — a mystery wrapped in
-              starlight 💫
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Floating space emojis */}
-        <motion.div
-          className="flex gap-4 mt-6 text-2xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-        >
-          {[
-            { id: "fe-a", e: "🌟" },
-            { id: "fe-b", e: "🪐" },
-            { id: "fe-c", e: "✨" },
-            { id: "fe-d", e: "💫" },
-            { id: "fe-e", e: "🌙" },
-            { id: "fe-f", e: "⭐" },
-          ].map(({ id: eid, e }, i) => (
-            <span
-              key={eid}
-              className="animate-float-up"
-              style={{ animationDelay: `${i * 0.3}s` }}
-            >
-              {e}
-            </span>
-          ))}
-        </motion.div>
-      </motion.div>
-
-      {/* Planet alignment message */}
-      <AnimatePresence>
-        {showAlignMsg && (
-          <motion.div
-            className="absolute z-20 text-center pointer-events-none"
-            style={{ top: "10%" }}
-            initial={{ opacity: 0, scale: 0.5, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          >
-            <p
-              className="font-dancing"
-              style={{
-                fontSize: "clamp(1.4rem, 5vw, 2.2rem)",
-                color: "#ff80c0",
-                textShadow: "0 0 20px #ff80c099, 0 0 40px #cc40a055",
-                padding: "0.5rem 1.5rem",
-                background: "rgba(0,0,20,0.6)",
-                borderRadius: "2rem",
-                border: "1px solid rgba(255,182,193,0.4)",
-                backdropFilter: "blur(8px)",
-              }}
-            >
-              ✨ The planets have aligned! ✨
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
 // ─── Existing site ────────────────────────────────────────────────────────────
 
 const DECORATIONS = [
@@ -865,6 +175,45 @@ const SPARKLE_BACKGROUNDS = [
   "oklch(0.85 0.12 0)",
 ];
 
+const MAITRI_ACROSTIC = [
+  {
+    id: "ma-m",
+    letter: "M",
+    meaning: "Magical smile that melts my heart",
+    emoji: "✨",
+  },
+  {
+    id: "ma-a",
+    letter: "A",
+    meaning: "Angelic presence in my life",
+    emoji: "💕",
+  },
+  {
+    id: "ma-i1",
+    letter: "I",
+    meaning: "Inspiration for my every dream",
+    emoji: "🌟",
+  },
+  {
+    id: "ma-t",
+    letter: "T",
+    meaning: "Thoughtful, tender, and true",
+    emoji: "💖",
+  },
+  {
+    id: "ma-r",
+    letter: "R",
+    meaning: "Rare gem I'm lucky to hold",
+    emoji: "💎",
+  },
+  {
+    id: "ma-i2",
+    letter: "I",
+    meaning: "Irreplaceable and lovely 19-year-old",
+    emoji: "🌸",
+  },
+];
+
 function ConfettiCanvas({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pieces = useRef<
@@ -899,7 +248,7 @@ function ConfettiCanvas({ active }: { active: boolean }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    pieces.current = Array.from({ length: 120 }, () => ({
+    pieces.current = Array.from({ length: 30 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * -canvas.height * 0.5,
       vx: (Math.random() - 0.5) * 4,
@@ -990,13 +339,7 @@ function SurpriseModal({ onClose }: { onClose: () => void }) {
             </span>
           ))}
 
-          <motion.div
-            className="text-6xl mb-4"
-            animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
-          >
-            🎉
-          </motion.div>
+          <div className="text-6xl mb-4 animate-float-up">🎉</div>
 
           <h2
             className="font-dancing text-4xl mb-2"
@@ -1007,24 +350,17 @@ function SurpriseModal({ onClose }: { onClose: () => void }) {
           <div className="text-3xl mb-6 animate-heart-pulse">💕💕💕</div>
 
           <p
-            className="text-base leading-relaxed mb-6 font-nunito"
-            style={{ color: "oklch(0.25 0.10 310)", fontSize: "1.05rem" }}
-          >
-            Maitri, you are the most wonderful person in the world. Every single
-            day with you is a precious gift that I treasure deeply. Today, on
-            your{" "}
-            <strong style={{ color: "oklch(0.45 0.18 310)" }}>
-              19th birthday
-            </strong>
-            , I want you to know just how <em>deeply</em> you are loved. 🌸
-          </p>
-          <p
             className="text-base leading-relaxed mb-8 font-nunito"
             style={{ color: "oklch(0.25 0.10 310)", fontSize: "1.05rem" }}
           >
-            May this year bring you endless joy, mountains of laughter, and all
-            the happiness you deserve! You deserve the entire universe and more.
-            Happy Birthday, my love! 🎂✨
+            Happy 19th Birthday, Maitri! They say nineteen is the last year of
+            being a teenager, but to me, you&apos;re the person I want to
+            celebrate every single year for the rest of my life as a friend or
+            any kind as you say — but you will always be small cute child to me
+            who is always an adorable girl. You bring so much light and laughter
+            into my world just by being you. I hope this year brings you as much
+            happiness as you&apos;ve given me since the moment we met. I&apos;m
+            so proud of the woman you&apos;re becoming. 💖
           </p>
 
           <button
@@ -1143,13 +479,7 @@ function HeroSection() {
 
       {/* Main content */}
       <div className="relative z-10 text-center max-w-3xl">
-        <motion.div
-          className="text-7xl mb-4"
-          animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
-          transition={{ repeat: Number.POSITIVE_INFINITY, duration: 3 }}
-        >
-          🎂
-        </motion.div>
+        <div className="text-7xl mb-4 animate-float-up">🎂</div>
 
         <motion.h1
           className="font-dancing leading-tight mb-4"
@@ -1189,21 +519,13 @@ function HeroSection() {
           🎉 19 years of pure magic, joy, and wonder! 🎉
         </motion.p>
 
-        <motion.div
-          className="flex justify-center mb-8"
-          animate={{ y: [0, -12, 0] }}
-          transition={{
-            repeat: Number.POSITIVE_INFINITY,
-            duration: 3,
-            ease: "easeInOut",
-          }}
-        >
+        <div className="flex justify-center mb-8 animate-float-bob">
           <img
             src="/assets/generated/birthday-cake-transparent.dim_300x300.png"
             alt="Birthday cake"
             className="w-36 md:w-44"
           />
-        </motion.div>
+        </div>
 
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {HERO_HEARTS.map((item, idx) => (
@@ -1435,7 +757,7 @@ function MessageWallSection() {
                 className="text-sm leading-relaxed mb-4 font-nunito"
                 style={{ color: "oklch(0.22 0.08 310)" }}
               >
-                "{m.msg}"
+                &quot;{m.msg}&quot;
               </p>
               <div
                 className="text-sm font-bold text-right"
@@ -1443,6 +765,89 @@ function MessageWallSection() {
               >
                 — {m.from}
               </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MAITRISection() {
+  return (
+    <section
+      className="py-20 px-4"
+      style={{
+        background:
+          "linear-gradient(135deg, oklch(0.93 0.06 310), oklch(0.95 0.05 0), oklch(0.93 0.07 290))",
+      }}
+    >
+      <div className="max-w-lg mx-auto">
+        <motion.div
+          className="text-center mb-10"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="text-5xl mb-3">💝</div>
+          <h2
+            className="font-dancing text-4xl md:text-5xl mb-3"
+            style={{ color: "oklch(0.25 0.10 310)" }}
+          >
+            What MAITRI Means
+          </h2>
+          <p
+            className="text-lg font-nunito"
+            style={{ color: "oklch(0.42 0.10 310)" }}
+          >
+            Every letter tells your story 🌸
+          </p>
+        </motion.div>
+
+        <div className="space-y-4">
+          {MAITRI_ACROSTIC.map((row, i) => (
+            <motion.div
+              key={row.id}
+              className="flex items-center gap-5 rounded-2xl px-6 py-4 border"
+              style={{
+                background: "oklch(1 0 0 / 0.7)",
+                borderColor: "oklch(0.80 0.12 310 / 0.4)",
+                boxShadow: "0 4px 16px oklch(0.45 0.18 310 / 0.10)",
+              }}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              data-ocid={`maitri.item.${i + 1}`}
+            >
+              {/* Big letter */}
+              <span
+                className="font-dancing font-bold flex-shrink-0 leading-none"
+                style={{
+                  fontSize: "3.5rem",
+                  background:
+                    "linear-gradient(135deg, oklch(0.55 0.22 0), oklch(0.45 0.18 310))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  lineHeight: 1,
+                  minWidth: "2.8rem",
+                  textAlign: "center",
+                }}
+              >
+                {row.letter}
+              </span>
+              {/* Meaning */}
+              <p
+                className="font-nunito font-semibold text-base leading-snug flex-1"
+                style={{ color: "oklch(0.28 0.10 310)" }}
+              >
+                {row.meaning}
+              </p>
+              {/* Emoji accent */}
+              <span className="text-2xl flex-shrink-0 animate-heart-pulse">
+                {row.emoji}
+              </span>
             </motion.div>
           ))}
         </div>
@@ -1485,13 +890,7 @@ function CAFinalistSection() {
             ✨
           </span>
 
-          <motion.div
-            className="text-6xl mb-4"
-            animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }}
-            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2.5 }}
-          >
-            🏆
-          </motion.div>
+          <div className="text-6xl mb-4 animate-float-up">🏆</div>
 
           <motion.div
             className="inline-block px-4 py-1.5 rounded-full text-sm font-bold font-nunito mb-4 uppercase tracking-widest"
@@ -1840,10 +1239,22 @@ function Footer() {
 export default function App() {
   const [surpriseOpen, setSurpriseOpen] = useState(false);
   const [confettiActive, setConfettiActive] = useState(false);
-  const { past: isBirthdayTime, now } = useCountdown(BIRTHDAY_DATE);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Keep `now` used so lint doesn't complain — it drives countdown re-renders
-  void now;
+  function toggleMusic() {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (musicPlaying) {
+      audio.pause();
+      setMusicPlaying(false);
+    } else {
+      audio
+        .play()
+        .then(() => setMusicPlaying(true))
+        .catch(() => {});
+    }
+  }
 
   function openSurprise() {
     setSurpriseOpen(true);
@@ -1862,10 +1273,6 @@ export default function App() {
     }
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  if (!isBirthdayTime) {
-    return <CountdownGate />;
   }
 
   return (
@@ -1901,6 +1308,7 @@ export default function App() {
         <HeroSection />
         <TimelineSection />
         <MessageWallSection />
+        <MAITRISection />
         <CAFinalistSection />
         <FunFactsSection />
         <SurpriseButtonSection onSurprise={openSurprise} />
@@ -1909,6 +1317,42 @@ export default function App() {
       <Footer />
 
       {surpriseOpen && <SurpriseModal onClose={closeSurprise} />}
+
+      {/* Background Music */}
+      <audio
+        ref={audioRef}
+        src="/assets/tum_hi_ho_aashiqui_2_arijit_singh_instrumental_with_lyrics_hd_heart_touching_-_320_kbps-019d307b-eeaa-7329-8fc1-614cb8d38bc7.mp3"
+        loop
+        preload="auto"
+      >
+        <track kind="captions" />
+      </audio>
+
+      {/* Music Toggle Button */}
+      <button
+        type="button"
+        onClick={toggleMusic}
+        style={{
+          position: "fixed",
+          bottom: "1.5rem",
+          right: "1.5rem",
+          zIndex: 9999,
+          background: "linear-gradient(135deg, #ff6eb4, #c77dff)",
+          border: "none",
+          borderRadius: "50%",
+          width: "3.2rem",
+          height: "3.2rem",
+          fontSize: "1.4rem",
+          cursor: "pointer",
+          boxShadow: "0 4px 18px rgba(255,110,180,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        title={musicPlaying ? "Pause Music" : "Play Music"}
+      >
+        {musicPlaying ? "🎵" : "🔇"}
+      </button>
     </div>
   );
 }
