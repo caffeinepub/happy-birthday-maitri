@@ -346,13 +346,32 @@ function CountdownPage({ onUnlock }: { onUnlock: () => void }) {
         ))}
       </div>
 
+      {/* Universe is Counting title */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 11,
+          fontFamily: "'Dancing Script', cursive",
+          fontSize: "1.6rem",
+          fontWeight: 700,
+          color: "white",
+          textShadow:
+            "0 0 20px oklch(0.75 0.22 330), 0 0 40px oklch(0.65 0.20 310)",
+          letterSpacing: "0.05em",
+          textAlign: "center",
+          marginBottom: "1rem",
+          opacity: 0.95,
+        }}
+      >
+        ✨ the universe is counting ✨
+      </div>
+
       {/* Countdown card */}
       <div
         style={{
           position: "relative",
           zIndex: 10,
-          background: "oklch(1 0 0 / 0.05)",
-          backdropFilter: "blur(4px)",
+          background: "oklch(1 0 0 / 0.00)",
           borderRadius: "2rem",
           padding: "2rem 1.5rem",
           maxWidth: 380,
@@ -408,7 +427,7 @@ function CountdownPage({ onUnlock }: { onUnlock: () => void }) {
             <div
               key={item.label}
               style={{
-                background: "oklch(1 0 0 / 0.10)",
+                background: "oklch(1 0 0 / 0.00)",
                 border: "1px solid oklch(1 0 0 / 0.25)",
                 borderRadius: "0.9rem",
                 padding: "0.7rem 0.5rem",
