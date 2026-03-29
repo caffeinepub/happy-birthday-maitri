@@ -1121,7 +1121,7 @@ function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          March 29th, 2026 ✨
+          March 29th, 2026 · Born at 11:55 PM ✨
         </motion.p>
 
         <motion.p
@@ -1786,6 +1786,267 @@ function ReasonsSection() {
   );
 }
 
+// ─── Universe Was Waiting Section ────────────────────────────────────────────
+const UNIVERSE_PLANETS = [
+  { color: "#c084fc", size: 14, orbit: 80, duration: 8 },
+  { color: "#60a5fa", size: 10, orbit: 115, duration: 13 },
+  { color: "#f9a8d4", size: 13, orbit: 150, duration: 18 },
+  { color: "#86efac", size: 9, orbit: 185, duration: 24 },
+  { color: "#fde68a", size: 11, orbit: 218, duration: 31 },
+];
+
+function UniverseWaitingSection() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const stars = Array.from({ length: 150 }, () => {
+      const palette = ["#ffffff", "#fffde7", "#fce4ec", "#e8eaf6", "#f3e5f5"];
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2 + 0.3,
+        alpha: Math.random(),
+        speed: Math.random() * 0.008 + 0.003,
+        color: palette[Math.floor(Math.random() * palette.length)],
+      };
+    });
+
+    let raf: number;
+    function draw() {
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const s of stars) {
+        s.alpha += s.speed;
+        if (s.alpha > 1) s.speed = -Math.abs(s.speed);
+        if (s.alpha < 0) s.speed = Math.abs(s.speed);
+        ctx.globalAlpha = Math.max(0, Math.min(1, s.alpha));
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      raf = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <section
+      className="py-24 px-4 relative overflow-hidden"
+      style={{
+        minHeight: 500,
+        background:
+          "linear-gradient(180deg, oklch(0.08 0.06 280), oklch(0.12 0.10 310), oklch(0.08 0.06 280))",
+      }}
+    >
+      <style>{`
+        @keyframes universeOrbit {
+          from { transform: rotate(0deg) translateX(var(--orbit-r)) rotate(0deg); }
+          to   { transform: rotate(360deg) translateX(var(--orbit-r)) rotate(-360deg); }
+        }
+      `}</style>
+
+      {/* Starfield */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+        }}
+      />
+
+      {/* Central glowing star */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 44,
+          height: 44,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, #fff9c4 0%, #fbbf24 60%, transparent 100%)",
+          boxShadow:
+            "0 0 40px 18px rgba(251,191,36,0.45), 0 0 80px 36px rgba(251,191,36,0.18)",
+          zIndex: 2,
+        }}
+      />
+
+      {/* Orbiting planets */}
+      {UNIVERSE_PLANETS.map((p) => (
+        <div
+          key={`planet-${p.orbit}`}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: p.size,
+            height: p.size,
+            borderRadius: "50%",
+            background: p.color,
+            boxShadow: `0 0 10px 4px ${p.color}88`,
+            marginLeft: -p.size / 2,
+            marginTop: -p.size / 2,
+            // @ts-expect-error CSS variable
+            "--orbit-r": `${p.orbit}px`,
+            animation: `universeOrbit ${p.duration}s linear infinite`,
+            zIndex: 2,
+          }}
+        />
+      ))}
+
+      {/* Orbit rings */}
+      {UNIVERSE_PLANETS.map((p) => (
+        <div
+          key={`ring-${p.orbit}`}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: p.orbit * 2,
+            height: p.orbit * 2,
+            marginLeft: -p.orbit,
+            marginTop: -p.orbit,
+            borderRadius: "50%",
+            border: "1px solid rgba(255,255,255,0.07)",
+            zIndex: 1,
+          }}
+        />
+      ))}
+
+      {/* Text content */}
+      <div
+        className="relative text-center max-w-2xl mx-auto"
+        style={{ zIndex: 10, paddingTop: "280px" }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          style={{
+            fontFamily: "'Dancing Script', cursive",
+            fontSize: "clamp(2rem, 7vw, 3rem)",
+            color: "#fff",
+            textShadow:
+              "0 0 30px rgba(240,180,255,0.9), 0 0 60px rgba(200,130,255,0.5)",
+            marginBottom: "0.75rem",
+          }}
+        >
+          ✦ The Universe Was Waiting ✦
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          style={{
+            fontFamily: "Nunito, sans-serif",
+            fontSize: "1rem",
+            color: "oklch(0.78 0.08 280)",
+            marginBottom: "2rem",
+          }}
+        >
+          Every star aligned, every planet held its breath...
+        </motion.p>
+
+        {/* Planet cards */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          {[
+            { icon: "🪐", text: "Every planet paused in its orbit" },
+            { icon: "⭐", text: "Every star saved its brightest light" },
+            { icon: "🌙", text: "The universe whispered her name" },
+          ].map((card) => (
+            <motion.div
+              key={card.icon}
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(200,150,255,0.35)",
+                borderRadius: "1rem",
+                padding: "1rem 1.25rem",
+                boxShadow: "0 0 20px rgba(180,100,255,0.2)",
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
+              <div style={{ fontSize: "1.8rem", marginBottom: "0.4rem" }}>
+                {card.icon}
+              </div>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.8)",
+                  fontFamily: "Nunito,sans-serif",
+                  fontSize: "0.85rem",
+                  lineHeight: 1.5,
+                }}
+              >
+                {card.text}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.blockquote
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.6 }}
+          viewport={{ once: true }}
+          style={{
+            fontFamily: "'Dancing Script', cursive",
+            fontSize: "clamp(1.1rem, 3.5vw, 1.35rem)",
+            color: "rgba(255,255,255,0.92)",
+            textShadow: "0 0 20px rgba(255,220,255,0.5)",
+            fontStyle: "italic",
+            lineHeight: 1.7,
+            marginBottom: "1.25rem",
+          }}
+        >
+          "On March 29th, 2007 — at 11:55 PM, when the night was nearly over —
+          the universe finally exhaled. Maitri had arrived."
+        </motion.blockquote>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.7, delay: 0.9 }}
+          viewport={{ once: true }}
+          style={{
+            fontFamily: "Nunito, sans-serif",
+            fontSize: "0.9rem",
+            color: "oklch(0.72 0.06 280)",
+          }}
+        >
+          The stars had been counting down to 11:55 PM their whole lives. 🌌
+        </motion.p>
+      </div>
+    </section>
+  );
+}
+
 function PoemSection() {
   return (
     <section className="py-20 px-4">
@@ -1939,6 +2200,190 @@ function Header({ onNavClick }: { onNavClick: (id: string) => void }) {
   );
 }
 
+// ─── End of Day Section ───────────────────────────────────────────────────────
+function EndOfDaySection() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const stars = Array.from({ length: 50 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.8 + 0.3,
+      alpha: Math.random(),
+      speed: Math.random() * 0.004 + 0.001,
+    }));
+
+    let raf: number;
+    function draw() {
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const s of stars) {
+        s.alpha += s.speed;
+        if (s.alpha > 1) s.speed = -Math.abs(s.speed);
+        if (s.alpha < 0) s.speed = Math.abs(s.speed);
+        ctx.globalAlpha = Math.max(0, Math.min(1, s.alpha));
+        ctx.fillStyle = "#e8d5ff";
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      raf = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <section
+      className="py-20 px-4 relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(180deg, oklch(0.14 0.08 290), oklch(0.10 0.06 270), oklch(0.16 0.10 310))",
+        minHeight: 480,
+      }}
+    >
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+        }}
+      />
+
+      <div
+        className="relative text-center max-w-xl mx-auto"
+        style={{ zIndex: 10 }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.7 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
+          viewport={{ once: true }}
+          style={{
+            fontSize: "4rem",
+            marginBottom: "1rem",
+            textShadow: "0 0 40px rgba(200,180,255,0.8)",
+            display: "inline-block",
+          }}
+        >
+          🌙
+        </motion.div>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          style={{
+            fontFamily: "'Dancing Script', cursive",
+            fontSize: "clamp(1.8rem, 6vw, 2.6rem)",
+            color: "rgba(255,240,255,0.95)",
+            textShadow: "0 0 24px rgba(220,180,255,0.7)",
+            marginBottom: "2rem",
+          }}
+        >
+          As this beautiful day ends...
+        </motion.h2>
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.4 }}
+          viewport={{ once: true }}
+          style={{
+            fontFamily: "Nunito, sans-serif",
+            fontSize: "clamp(0.95rem, 2.5vw, 1.05rem)",
+            color: "rgba(225,210,255,0.9)",
+            lineHeight: 1.85,
+            textAlign: "left",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(200,160,255,0.2)",
+            borderRadius: "1.5rem",
+            padding: "2rem",
+            boxShadow: "0 0 50px rgba(160,100,255,0.15)",
+          }}
+        >
+          <p style={{ marginBottom: "1.1rem" }}>
+            <strong style={{ color: "rgba(255,220,255,0.95)" }}>Maitri,</strong>
+          </p>
+          <p style={{ marginBottom: "1.1rem" }}>
+            Somewhere between midnight and morning on March 29th — at exactly{" "}
+            <em>11:55 PM</em> — the world became a little more magical when you
+            entered it.
+          </p>
+          <p style={{ marginBottom: "1.1rem" }}>
+            Today, 19 years later, we've laughed, celebrated, wished, and
+            marveled at everything you are. And now, as the stars come out and
+            this beautiful birthday day fades into night...
+          </p>
+          <p style={{ marginBottom: "1.1rem" }}>
+            I want you to know —{" "}
+            <em>you are loved beyond what words can hold.</em>
+            <br />
+            Not just today. Every day. Every quiet night. Every ordinary
+            morning.
+          </p>
+          <p style={{ marginBottom: "1.1rem" }}>
+            Sleep well, birthday girl. The universe smiles every time you close
+            your eyes. 🌙💕
+          </p>
+          <p
+            style={{
+              marginTop: "1.5rem",
+              color: "rgba(255,220,200,0.8)",
+              fontStyle: "italic",
+            }}
+          >
+            — Always yours 🌟
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          viewport={{ once: true }}
+          style={{
+            marginTop: "2rem",
+            fontSize: "2rem",
+            letterSpacing: "0.5rem",
+          }}
+        >
+          {["✨", "🌙", "⭐", "💫"].map((em) => (
+            <span
+              key={em}
+              style={{
+                display: "inline-block",
+                animation: "pulse 2s ease-in-out infinite alternate",
+              }}
+            >
+              {em}
+            </span>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function Footer() {
   const year = new Date().getFullYear();
   const hostname =
@@ -2084,10 +2529,12 @@ export default function App() {
         <MessageWallSection />
         <MAITRISection />
         <ReasonsSection />
+        <UniverseWaitingSection />
         <CAFinalistSection />
         <FunFactsSection />
         <PoemSection />
         <SurpriseButtonSection onSurprise={openSurprise} />
+        <EndOfDaySection />
       </main>
 
       <Footer />
