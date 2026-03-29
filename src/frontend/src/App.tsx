@@ -326,7 +326,7 @@ function CountdownPage({ onUnlock }: { onUnlock: () => void }) {
               style={
                 {
                   position: "absolute",
-                  top: 0,
+                  top: "50%",
                   left: "50%",
                   marginLeft: -p.size / 2,
                   marginTop: -p.size / 2,
@@ -585,6 +585,54 @@ const DECORATIONS = [
     size: "1.4rem",
     delay: 2.2,
     duration: 4.8,
+  },
+  {
+    emoji: "🧸",
+    left: "12%",
+    top: "55%",
+    size: "1.7rem",
+    delay: 1.3,
+    duration: 9,
+  },
+  {
+    emoji: "🌷",
+    left: "82%",
+    top: "30%",
+    size: "1.4rem",
+    delay: 0.7,
+    duration: 7.5,
+  },
+  {
+    emoji: "🍭",
+    left: "5%",
+    top: "80%",
+    size: "1.5rem",
+    delay: 1.6,
+    duration: 8,
+  },
+  {
+    emoji: "🌈",
+    left: "90%",
+    top: "75%",
+    size: "1.6rem",
+    delay: 2.4,
+    duration: 10,
+  },
+  {
+    emoji: "🎠",
+    left: "45%",
+    top: "15%",
+    size: "1.3rem",
+    delay: 0.4,
+    duration: 6.5,
+  },
+  {
+    emoji: "🧁",
+    left: "70%",
+    top: "60%",
+    size: "1.4rem",
+    delay: 1.9,
+    duration: 8.5,
   },
 ];
 
@@ -960,6 +1008,33 @@ function HeroSection() {
           className="w-40 lg:w-52 opacity-95"
         />
       </motion.div>
+
+      {/* Mobile kawaii - teddy left */}
+      <div
+        className="absolute bottom-4 left-2 animate-float-bob flex items-center justify-center rounded-full"
+        style={{
+          width: "40px",
+          height: "40px",
+          background: "oklch(0.90 0.10 0 / 0.5)",
+          boxShadow: "0 0 12px oklch(0.70 0.15 0 / 0.4)",
+        }}
+      >
+        <span className="text-2xl">🧸</span>
+      </div>
+
+      {/* Mobile kawaii - bow right */}
+      <div
+        className="absolute bottom-4 right-2 animate-float-bob flex items-center justify-center rounded-full"
+        style={{
+          width: "40px",
+          height: "40px",
+          background: "oklch(0.88 0.08 310 / 0.5)",
+          boxShadow: "0 0 12px oklch(0.65 0.14 310 / 0.4)",
+          animationDelay: "0.8s",
+        }}
+      >
+        <span className="text-2xl">🎀</span>
+      </div>
 
       {/* Main content */}
       <div className="relative z-10 text-center max-w-3xl">
@@ -1551,6 +1626,158 @@ function FunFactsSection() {
   );
 }
 
+function ReasonsSection() {
+  const reasons = [
+    { n: 1, emoji: "🌸", text: "Your smile lights up any room" },
+    { n: 2, emoji: "💫", text: "You chase dreams without fear" },
+    { n: 3, emoji: "🎓", text: "You earned your CA Finalist badge" },
+    { n: 4, emoji: "💖", text: "You love deeply and genuinely" },
+    { n: 5, emoji: "🌙", text: "You make the ordinary magical" },
+    { n: 6, emoji: "✨", text: "Your laugh is pure medicine" },
+    { n: 7, emoji: "🦋", text: "You grow more beautiful every year" },
+    { n: 8, emoji: "🎵", text: "You fill life with music and joy" },
+    { n: 9, emoji: "💡", text: "You are brilliantly smart" },
+    { n: 10, emoji: "🌺", text: "You bloom even in hard times" },
+    { n: 11, emoji: "🤗", text: "Your hugs feel like home" },
+    { n: 12, emoji: "💪", text: "You are stronger than you know" },
+    { n: 13, emoji: "🌈", text: "You bring color to every day" },
+    { n: 14, emoji: "🎀", text: "You have the most adorable heart" },
+    { n: 15, emoji: "🍰", text: "You make every celebration sweeter" },
+    { n: 16, emoji: "🌟", text: "You inspire everyone around you" },
+    { n: 17, emoji: "💌", text: "You give the most thoughtful love" },
+    { n: 18, emoji: "🪐", text: "You are literally out of this world" },
+    { n: 19, emoji: "🎂", text: "You turn 19 and still perfect!" },
+  ];
+
+  return (
+    <section
+      className="py-20 px-4"
+      style={{
+        background:
+          "linear-gradient(135deg, oklch(0.94 0.05 310), oklch(0.96 0.04 0), oklch(0.94 0.06 290))",
+      }}
+    >
+      <div className="max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-10"
+        >
+          <div className="text-5xl mb-3">🌟</div>
+          <h2
+            className="font-dancing mb-2"
+            style={{
+              fontSize: "clamp(2rem, 6vw, 3rem)",
+              color: "oklch(0.30 0.14 310)",
+              textShadow: "1px 2px 6px oklch(0.50 0.15 310 / 0.2)",
+            }}
+          >
+            19 Reasons You're Amazing
+          </h2>
+          <p
+            className="font-nunito text-base"
+            style={{ color: "oklch(0.45 0.10 310)" }}
+          >
+            Because 19 is your magic number ✨
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {reasons.map((r, i) => (
+            <motion.div
+              key={r.n}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+              whileHover={{ scale: 1.04 }}
+              className="rounded-2xl p-3 flex flex-col items-start gap-1 shadow-party"
+              style={{
+                background: "oklch(1.0 0.0 0 / 0.72)",
+                backdropFilter: "blur(6px)",
+                border: "1px solid oklch(0.88 0.06 310 / 0.4)",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className="rounded-full flex items-center justify-center text-xs font-bold font-nunito"
+                  style={{
+                    minWidth: "22px",
+                    height: "22px",
+                    background:
+                      "linear-gradient(135deg, oklch(0.70 0.18 310), oklch(0.65 0.20 0))",
+                    color: "white",
+                    padding: "0 4px",
+                  }}
+                >
+                  {r.n}
+                </span>
+                <span className="text-xl">{r.emoji}</span>
+              </div>
+              <p
+                className="font-nunito text-xs leading-snug"
+                style={{ color: "oklch(0.30 0.10 310)" }}
+              >
+                {r.text}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PoemSection() {
+  return (
+    <section className="py-20 px-4">
+      <div
+        className="max-w-lg mx-auto rounded-3xl p-8 text-center"
+        style={{
+          background:
+            "linear-gradient(135deg, oklch(0.25 0.12 310), oklch(0.20 0.10 290))",
+          boxShadow: "0 0 60px oklch(0.55 0.18 310 / 0.4)",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="text-4xl mb-4">✨</div>
+          <p
+            className="font-dancing mb-4 leading-relaxed"
+            style={{ fontSize: "1.5rem", color: "oklch(0.96 0.02 310)" }}
+          >
+            Like the moon needs the stars,
+            <br />
+            Like the sun needs the sky,
+            <br />I needed someone like you
+            <br />
+            to remind me how to fly.
+          </p>
+          <p
+            className="font-dancing leading-relaxed"
+            style={{ fontSize: "1.5rem", color: "oklch(0.96 0.02 310)" }}
+          >
+            Happy 19th Birthday,
+            <br />
+            you beautiful soul —
+            <br />
+            the universe planted you here
+            <br />
+            to make every heart whole.
+          </p>
+          <div className="text-3xl mt-4">💕</div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function SurpriseButtonSection({ onSurprise }: { onSurprise: () => void }) {
   return (
     <section
@@ -1800,8 +2027,10 @@ export default function App() {
         <TimelineSection />
         <MessageWallSection />
         <MAITRISection />
+        <ReasonsSection />
         <CAFinalistSection />
         <FunFactsSection />
+        <PoemSection />
         <SurpriseButtonSection onSurprise={openSurprise} />
       </main>
 
