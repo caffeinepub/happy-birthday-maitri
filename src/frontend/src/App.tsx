@@ -885,7 +885,7 @@ function SurpriseModal({ onClose }: { onClose: () => void }) {
             className="text-base leading-relaxed mb-8 font-nunito"
             style={{ color: "oklch(0.25 0.10 310)", fontSize: "1.05rem" }}
           >
-            <p>Good morning, my favourite person in the whole universe! ☀️🌸</p>
+            <p>Good evening, my favourite person in the whole universe! 🌙🌸</p>
             <br />
             <p>
               Wake up, wake up — today is YOUR day! 🎉 Happy 19th Birthday,
@@ -915,8 +915,8 @@ function SurpriseModal({ onClose }: { onClose: () => void }) {
             </p>
             <br />
             <p>
-              Good morning, birthday girl. The sun rose a little brighter today
-              — just for you. 🌅💕
+              Good evening, birthday girl. The stars shone a little brighter
+              today — just for you. 🌅💕
             </p>
           </div>
 
@@ -1079,7 +1079,7 @@ function HeroSection() {
               letterSpacing: "0.02em",
             }}
           >
-            🌅 Good Morning,
+            🌙 Good Evening,
           </p>
           <p
             className="font-dancing font-bold"
