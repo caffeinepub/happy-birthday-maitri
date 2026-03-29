@@ -1063,6 +1063,37 @@ function HeroSection() {
 
       {/* Main content */}
       <div className="relative z-10 text-center max-w-3xl">
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, scale: 0.7, y: -20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+        >
+          <p
+            className="font-dancing font-bold"
+            style={{
+              fontSize: "clamp(2rem, 7vw, 4.5rem)",
+              color: "oklch(0.30 0.14 30)",
+              textShadow:
+                "0 2px 16px oklch(0.65 0.20 60 / 0.6), 0 0 30px oklch(0.80 0.18 60 / 0.4)",
+              letterSpacing: "0.02em",
+            }}
+          >
+            🌅 Good Morning,
+          </p>
+          <p
+            className="font-dancing font-bold"
+            style={{
+              fontSize: "clamp(2.5rem, 9vw, 5.5rem)",
+              color: "oklch(0.45 0.22 15)",
+              textShadow:
+                "0 2px 20px oklch(0.70 0.25 15 / 0.7), 0 0 40px oklch(0.85 0.20 15 / 0.5)",
+              letterSpacing: "0.02em",
+            }}
+          >
+            Birthday Girl! 🎀
+          </p>
+        </motion.div>
         <div className="text-7xl mb-4 animate-float-up">🎂</div>
 
         <motion.h1
