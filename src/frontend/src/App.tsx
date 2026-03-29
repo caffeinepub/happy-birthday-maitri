@@ -881,19 +881,44 @@ function SurpriseModal({ onClose }: { onClose: () => void }) {
           </h2>
           <div className="text-3xl mb-6 animate-heart-pulse">💕💕💕</div>
 
-          <p
+          <div
             className="text-base leading-relaxed mb-8 font-nunito"
             style={{ color: "oklch(0.25 0.10 310)", fontSize: "1.05rem" }}
           >
-            Happy 19th Birthday, Maitri! They say nineteen is the last year of
-            being a teenager, but to me, you&apos;re the person I want to
-            celebrate every single year for the rest of my life as a friend or
-            any kind as you say — but you will always be small cute child to me
-            who is always an adorable girl. You bring so much light and laughter
-            into my world just by being you. I hope this year brings you as much
-            happiness as you&apos;ve given me since the moment we met. I&apos;m
-            so proud of the woman you&apos;re becoming. 💖
-          </p>
+            <p>Good morning, my favourite person in the whole universe! ☀️🌸</p>
+            <br />
+            <p>
+              Wake up, wake up — today is YOUR day! 🎉 Happy 19th Birthday,
+              Maitri! Nineteen years ago, the universe decided to gift this
+              world the most magical, adorable, and wonderful soul — and
+              somehow, I got lucky enough to have you in my life. 🌙✨
+            </p>
+            <br />
+            <p>
+              You will always be that small, cute, and endlessly adorable girl
+              to me — no matter how many birthdays pass. Every single day with
+              you feels like a little celebration, and today the whole universe
+              celebrates just for you. 💫
+            </p>
+            <br />
+            <p>
+              I am so deeply grateful for your smile, your laughter, your warmth
+              — everything you bring into my world without even trying. Thank
+              you for being you, Maitri. I promise to cherish you, celebrate
+              you, and be grateful for you — every single day. 🌷
+            </p>
+            <br />
+            <p>
+              I hope this morning feels as beautiful as you are, and that this
+              year becomes the most magical chapter of your life yet. You
+              deserve every bit of happiness this world holds. 💖
+            </p>
+            <br />
+            <p>
+              Good morning, birthday girl. The sun rose a little brighter today
+              — just for you. 🌅💕
+            </p>
+          </div>
 
           <button
             type="button"
